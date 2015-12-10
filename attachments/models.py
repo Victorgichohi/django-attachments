@@ -35,7 +35,7 @@ class Attachment(models.Model):
     modified = models.DateTimeField(_('modified'), auto_now=True)
 
     class Meta:
-        app_label = _("attachment")
+        app_label = "attachments"
         ordering = ['-created']
         permissions = (
             ('delete_foreign_attachments', 'Can delete foreign attachments'),
