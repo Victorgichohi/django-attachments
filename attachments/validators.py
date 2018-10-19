@@ -16,7 +16,7 @@ def validate_file_type(upload):
 
     # Check if file type satisfies our types
     if hasattr(settings, 'ALLOWED_FILE_TYPES') and \
-        file_type not in ALLOWED_FILE_TYPES:
+        file_type not in settings.ALLOWED_FILE_TYPES:
             raise ValidationError(
                 'You cannot upload ' + str(file_type) + ' file type. Allowed file types are: PDF, Microsoft word, Open Office docs and images (jpg or png).')
 

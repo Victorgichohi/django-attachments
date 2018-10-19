@@ -9,13 +9,17 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from attachments.models import Attachment
 from attachments.forms import AttachmentForm
+from validators import validate_file_type
+from django.core.exceptions import ValidationError
+
 
 def add_url_for_obj(obj):
     return reverse('add_attachment', kwargs={
-                        'app_label': obj._meta.app_label,
-                        'model_name': obj._meta.model_name,
-                        'pk': obj.pk
-                    })
+        'app_label': obj._meta.app_label,
+        'model_name': obj._meta.model_name,
+        'pk': obj.pk
+    })
+
 
 @require_POST
 @login_required
@@ -28,20 +32,28 @@ def add_attachment(request, app_label, model_name, pk,
         return HttpResponseRedirect(next)
     obj = get_object_or_404(model, pk=pk)
     form = AttachmentForm(request.POST, request.FILES)
-
     if form.is_valid():
+        file = request.FILES['attachment_file']
+
+        try:
+            validate_file_type(file)
+        except ValidationError, e:
+            messages.error(request, ('; '.join(e.messages)))
+            return HttpResponseRedirect(next)
+
         form.save(request, obj)
         messages.success(request, ugettext('Your attachment was uploaded.'))
         return HttpResponseRedirect(next)
-    else:
-        template_context = {
-            'form': form,
-            'form_url': add_url_for_obj(obj),
-            'next': next,
-        }
-        template_context.update(extra_context)
-        return render_to_response(template_name, template_context,
-                                  RequestContext(request))
+
+    template_context = {
+        'form': form,
+        'form_url': add_url_for_obj(obj),
+        'next': next,
+    }
+    template_context.update(extra_context)
+    return render_to_response(template_name, template_context,
+                              RequestContext(request))
+
 
 @login_required
 def delete_attachment(request, attachment_pk):

@@ -2,11 +2,9 @@ from django import forms
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from attachments.models import Attachment
-from validators import validate_file_type
 
 class AttachmentForm(forms.ModelForm):
-    attachment_file = forms.FileField(label=_('Upload attachment'),
-    								  validators=[validate_file_type])
+    attachment_file = forms.FileField(label=_('Upload attachment'))
 
     class Meta:
         model = Attachment
