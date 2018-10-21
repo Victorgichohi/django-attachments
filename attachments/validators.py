@@ -15,10 +15,11 @@ def validate_file_type(upload):
     file_type = magic.from_buffer(upload.read(1024), mime=True)
 
     # Check if file type satisfies our types
-    if hasattr(settings, 'ALLOWED_FILE_TYPES') and \
-        file_type not in settings.ALLOWED_FILE_TYPES:
-            raise ValidationError(
-                'You cannot upload ' + str(file_type) + ' file type. Allowed file types are: PDF, Microsoft word, Open Office docs and images (jpg or png).')
+    if hasattr(settings, 'ALLOWED_FILE_TYPES'):
+        allowed_types = settings.ALLOWED_FILE_TYPES
+        if file_type not in allowed_types.viewvalues():
+            raise ValidationError('You cannot upload file type: {}. Allowed file types are: {}.'
+                                  .format(str(file_type), ', '.join(allowed_types.viewkeys())))
 
     else:
         # if file meets standard, scan for virus
