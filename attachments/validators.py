@@ -12,7 +12,7 @@ def validate_file_type(upload):
     upload.seek(0)
 
     # Get File type
-    file_type = magic.from_buffer(upload.read(1024), mime=True)
+    file_type = magic.from_buffer(upload.read(), mime=True)
 
     # Check if file type satisfies our types
     if hasattr(settings, 'ALLOWED_FILE_TYPES'):
