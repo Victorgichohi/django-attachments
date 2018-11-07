@@ -11,10 +11,12 @@ def validate_file_type(upload):
     allowed_types = settings.ALLOWED_FILE_TYPES
     if file_type not in allowed_types.viewvalues():
         raise ValidationError('You cannot upload file type: {}. Allowed file types are: {}.'
-                              .format(str(file_type), ', '.join(allowed_types.viewkeys())))
+                                  .format(str(file_type), ', '.join(allowed_types.viewkeys())))
+
     else:
         # setup unix socket and scan stream
         cd = clamd.ClamdNetworkSocket(settings.CLAMD_TCP_ADDR, settings.CLAMD_TCP_SOCKET)
         scan_results = cd.instream(upload)
-        if (scan_results['stream'][0] == 'FOUND'):
+            
+        if (scan_results['stream'][0] == 'OK'):
             raise ValidationError("Your file appears to be infected by a virus.Please check again before uploading.")
