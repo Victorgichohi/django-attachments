@@ -18,5 +18,5 @@ def validate_file_type(upload):
         cd = clamd.ClamdNetworkSocket(settings.CLAMD_TCP_ADDR, settings.CLAMD_TCP_SOCKET)
         scan_results = cd.instream(upload)
             
-        if (scan_results['stream'][0] == 'OK'):
+        if (scan_results['stream'][0] == 'FOUND'):
             raise ValidationError("Your file appears to be infected by a virus.Please check again before uploading.")
