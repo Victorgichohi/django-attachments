@@ -31,16 +31,18 @@ def add_attachment(request, app_label, model_name, pk,
     if model is None:
         return HttpResponseRedirect(next)
     obj = get_object_or_404(model, pk=pk)
+
+    try:
+        file = request.FILES['attachment_file']
+        if (validate_file_type(file)) == False:
+            messages.error(request, ('Your file appears to be infected by a virus.Please check again before uploading.'))
+            return HttpResponseRedirect(next)
+    except ValidationError, e:
+        messages.error(request, ('; '.join(e.messages)))
+        return HttpResponseRedirect(next)
+
     form = AttachmentForm(request.POST, request.FILES)
     if form.is_valid():
-        file = request.FILES['attachment_file']
-
-        try:
-            validate_file_type(file)
-        except ValidationError, e:
-            messages.error(request, ('; '.join(e.messages)))
-            return HttpResponseRedirect(next)
-
         form.save(request, obj)
         messages.success(request, ugettext('Your attachment was uploaded.'))
         return HttpResponseRedirect(next)
